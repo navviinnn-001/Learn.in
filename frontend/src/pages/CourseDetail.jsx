@@ -1,13 +1,3 @@
-// ============================================================
-// pages/CourseDetail.jsx — Single Course View
-// ============================================================
-// Shows full course info: description, lessons, instructor.
-// If user is a logged-in student:
-//   - Not enrolled → show "Enroll" button
-//   - Enrolled → show lesson list with checkboxes to mark progress
-// useParams() gets the course :id from the URL.
-// ============================================================
-
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import api from "../utils/api";
@@ -15,11 +5,10 @@ import { useAuth } from "../context/AuthContext";
 import "./CourseDetail.css";
 
 const CourseDetail = () => {
-  const { id } = useParams(); // get :id from URL
+  const { id } = useParams();
   const { user } = useAuth();
-
   const [course, setCourse] = useState(null);
-  const [enrollment, setEnrollment] = useState(null); // null if not enrolled
+  const [enrollment, setEnrollment] = useState(null);
   const [loading, setLoading] = useState(true);
   const [enrolling, setEnrolling] = useState(false);
   const [message, setMessage] = useState("");
@@ -27,20 +16,15 @@ const CourseDetail = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Always fetch course details
         const courseRes = await api.get(`/courses/${id}`);
         setCourse(courseRes.data.course);
-
-        // If logged in as student, check enrollment
         if (user?.role === "student") {
           const enrollRes = await api.get("/enroll/my-courses");
-          const found = enrollRes.data.enrollments.find(
-            (e) => e.course?._id === id
-          );
+          const found = enrollRes.data.enrollments.find(e => e.course?._id === id);
           setEnrollment(found || null);
         }
       } catch (err) {
-        console.error("Error:", err);
+        console.error(err);
       } finally {
         setLoading(false);
       }
@@ -48,14 +32,12 @@ const CourseDetail = () => {
     fetchData();
   }, [id, user]);
 
-  // Enroll button handler
   const handleEnroll = async () => {
     setEnrolling(true);
     try {
       await api.post(`/enroll/${id}`);
-      // Refresh enrollment data
       const enrollRes = await api.get("/enroll/my-courses");
-      const found = enrollRes.data.enrollments.find((e) => e.course?._id === id);
+      const found = enrollRes.data.enrollments.find(e => e.course?._id === id);
       setEnrollment(found);
       setMessage("🎉 Successfully enrolled!");
     } catch (err) {
@@ -65,18 +47,16 @@ const CourseDetail = () => {
     }
   };
 
-  // Mark lesson as complete
   const handleMarkLesson = async (lessonId) => {
     try {
       const res = await api.put(`/enroll/${id}/lesson/${lessonId}`);
-      // Update enrollment state with new progress
-      setEnrollment((prev) => ({
+      setEnrollment(prev => ({
         ...prev,
         completedLessons: res.data.completedLessons,
         progress: res.data.progress,
       }));
     } catch (err) {
-      console.error("Error marking lesson:", err);
+      console.error(err);
     }
   };
 
@@ -86,74 +66,98 @@ const CourseDetail = () => {
   const isEnrolled = !!enrollment;
 
   return (
-    <div className="page">
-      <div className="container">
-        {/* Course Header */}
-        <div className="course-detail-header">
-          <div>
-            <div className="flex gap-2 mb-4">
-              <span className="badge badge-blue">{course.category}</span>
-              <span className={`badge ${
-                course.difficulty === "Beginner" ? "badge-green" :
-                course.difficulty === "Intermediate" ? "badge-orange" : "badge-blue"
-              }`}>{course.difficulty}</span>
+    <div style={{ paddingTop: "72px" }}>
+      {/* Hero */}
+      <div className="course-detail-hero">
+        <div className="container">
+          <div className="course-detail-grid">
+            <div>
+              <div className="course-detail-badges">
+                <span className="badge badge-gold">{course.category}</span>
+                <span className={`badge ${course.difficulty === "Beginner" ? "badge-green" : course.difficulty === "Intermediate" ? "badge-gold" : "badge-red"}`}>
+                  {course.difficulty}
+                </span>
+              </div>
+              <h1 className="course-detail-title">{course.title}</h1>
+              <p className="course-detail-desc">{course.description}</p>
+              <div className="course-detail-instructor-row">
+                <div className="instructor-avatar">
+                  {course.instructor?.name?.[0]?.toUpperCase()}
+                </div>
+                <div>
+                  <div className="instructor-info-name">{course.instructor?.name}</div>
+                  <div className="instructor-info-role">Course Instructor</div>
+                </div>
+              </div>
             </div>
-            <h1>{course.title}</h1>
-            <p className="course-detail-desc">{course.description}</p>
-            <p className="course-instructor">👨‍🏫 By {course.instructor?.name}</p>
-          </div>
 
-          {/* Enrollment Card */}
-          <div className="enroll-card card">
-            {enrollment ? (
-              <>
-                <div className="enroll-progress-label">
-                  <span>Your Progress</span>
-                  <strong>{enrollment.progress}%</strong>
-                </div>
-                <div className="progress-bar">
-                  <div className="progress-fill" style={{ width: `${enrollment.progress}%` }} />
-                </div>
-                <p className="enroll-status">✅ Enrolled</p>
-              </>
-            ) : (
-              <>
-                {message && <div className="alert alert-error">{message}</div>}
-                {user?.role === "student" ? (
-                  <button
-                    onClick={handleEnroll}
-                    className="btn btn-primary"
-                    disabled={enrolling}
-                    style={{ width: "100%", justifyContent: "center" }}
-                  >
-                    {enrolling ? "Enrolling..." : "Enroll Now — Free"}
-                  </button>
-                ) : !user ? (
-                  <Link to="/login" className="btn btn-primary" style={{ width: "100%", justifyContent: "center" }}>
-                    Login to Enroll
-                  </Link>
-                ) : (
-                  <p style={{ color: "var(--text-muted)", fontSize: "14px" }}>
-                    Instructors cannot enroll in courses.
-                  </p>
-                )}
-              </>
-            )}
-            <div className="enroll-meta">
-              <span>📚 {course.lessons.length} lessons</span>
+            {/* Enroll panel */}
+            <div className="enroll-panel">
+              {isEnrolled ? (
+                <>
+                  <div>
+                    <div className="enroll-progress-header">
+                      <span className="enroll-prog-label">Your Progress</span>
+                      <span className="enroll-prog-val">{enrollment.progress}%</span>
+                    </div>
+                    <div className="progress-bar">
+                      <div className="progress-fill" style={{ width: `${enrollment.progress}%` }} />
+                    </div>
+                  </div>
+                  <div className="enroll-enrolled-badge">
+                    ✓ Enrolled in this course
+                  </div>
+                  {message && <div className="alert alert-success">{message}</div>}
+                </>
+              ) : (
+                <>
+                  <div>
+                    <div className="enroll-free-label">Free</div>
+                    <div className="enroll-free-sub">Full lifetime access</div>
+                  </div>
+                  {message && <div className="alert alert-error">{message}</div>}
+                  {user?.role === "student" ? (
+                    <button onClick={handleEnroll} className="btn btn-primary enroll-cta-btn" disabled={enrolling}>
+                      {enrolling ? "Enrolling..." : "Enroll Now →"}
+                    </button>
+                  ) : !user ? (
+                    <Link to="/login" className="btn btn-primary enroll-cta-btn">Login to Enroll</Link>
+                  ) : (
+                    <p style={{ color: "var(--text-muted)", fontSize: "13px", fontWeight: 300 }}>
+                      Instructors cannot enroll in courses.
+                    </p>
+                  )}
+                  <ul className="enroll-checklist">
+                    {[
+                      `${course.lessons.length} lessons included`,
+                      "Progress tracking",
+                      "Certificate on completion",
+                      "Lifetime access",
+                    ].map((item, i) => (
+                      <li key={i} className="enroll-check-item">
+                        <span className="enroll-check-dot">✓</span>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
             </div>
           </div>
         </div>
+      </div>
 
-        {message && isEnrolled && (
-          <div className="alert alert-success">{message}</div>
-        )}
+      {/* Lessons */}
+      <div className="lessons-container">
+        <div className="container">
+          <div className="lessons-header">
+            <h2 className="lessons-title">Course Content</h2>
+            <span className="lessons-count">{course.lessons.length} lessons</span>
+          </div>
 
-        {/* Lessons List */}
-        <div className="lessons-section">
-          <h2>Course Content</h2>
           {course.lessons.length === 0 ? (
             <div className="empty-state">
+              <div className="empty-state-icon">◎</div>
               <p>No lessons added yet.</p>
             </div>
           ) : (
@@ -161,28 +165,23 @@ const CourseDetail = () => {
               {course.lessons.map((lesson, index) => {
                 const isDone = enrollment?.completedLessons?.includes(lesson._id);
                 return (
-                  <div key={lesson._id} className={`lesson-item ${isDone ? "done" : ""}`}>
-                    <div className="lesson-number">{index + 1}</div>
-                    <div className="lesson-info">
-                      <h4>{lesson.title}</h4>
-                      {isEnrolled && (
-                        <p className="lesson-content">{lesson.content}</p>
-                      )}
-                      {lesson.duration > 0 && (
-                        <span className="lesson-duration">⏱ {lesson.duration} min</span>
-                      )}
+                  <div key={lesson._id} className={`lesson-row ${isDone ? "lesson-done" : ""}`}>
+                    <div className="lesson-num">{isDone ? "✓" : index + 1}</div>
+                    <div className="lesson-body">
+                      <div className="lesson-name">{lesson.title}</div>
+                      {isEnrolled && <p className="lesson-text">{lesson.content}</p>}
+                      {lesson.duration > 0 && <span className="lesson-dur">⏱ {lesson.duration} min</span>}
                     </div>
-                    {isEnrolled && (
+                    {isEnrolled ? (
                       <button
                         onClick={() => handleMarkLesson(lesson._id)}
-                        className={`btn btn-sm ${isDone ? "btn-outline" : "btn-primary"}`}
+                        className={`btn btn-sm ${isDone ? "btn-ghost" : "btn-primary"}`}
                         disabled={isDone}
                       >
                         {isDone ? "✓ Done" : "Mark Done"}
                       </button>
-                    )}
-                    {!isEnrolled && (
-                      <span className="lesson-locked">🔒</span>
+                    ) : (
+                      <span className="lesson-lock">🔒</span>
                     )}
                   </div>
                 );

@@ -1,18 +1,13 @@
-// ============================================================
-// components/Navbar.jsx — Top Navigation Bar
-// ============================================================
-// Shows different links based on whether the user is logged in
-// and what their role is (student or instructor).
-// useNavigate() is used to redirect after logout.
-// ============================================================
-
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import "./Navbar.css";
 
 const Navbar = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const isActive = (path) => location.pathname === path ? "active" : "";
 
   const handleLogout = () => {
     logout();
@@ -21,38 +16,41 @@ const Navbar = () => {
 
   return (
     <nav className="navbar">
-      <div className="nav-container">
-        {/* Logo */}
+      <div className="navbar-inner">
+        <div className="navbar-bg" />
+
         <Link to="/" className="nav-logo">
-          Learn<span>.in</span>
+          Learn<span className="nav-logo-dot">.</span>in
         </Link>
 
-        {/* Navigation Links */}
         <div className="nav-links">
-          <Link to="/courses" className="nav-link">Courses</Link>
+          <Link to="/courses" className={`nav-link ${isActive("/courses")}`}>Courses</Link>
 
           {user ? (
             <>
-              <Link to="/dashboard" className="nav-link">Dashboard</Link>
-
-              {/* Instructor-only link */}
+              <Link to="/dashboard" className={`nav-link ${isActive("/dashboard")}`}>Dashboard</Link>
               {user.role === "instructor" && (
-                <Link to="/instructor" className="nav-link">My Courses</Link>
+                <Link to="/instructor" className={`nav-link ${isActive("/instructor")}`}>Studio</Link>
               )}
 
-              {/* User info + logout */}
+              <div className="nav-sep" />
+
               <div className="nav-user">
-                <span className="nav-username">{user.name}</span>
-                <span className={`nav-role ${user.role}`}>{user.role}</span>
-                <button onClick={handleLogout} className="btn btn-outline btn-sm">
-                  Logout
+                <div className="nav-avatar">{user.name[0].toUpperCase()}</div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+                  <span className="nav-name">{user.name.split(" ")[0]}</span>
+                  <span className={`nav-role-chip ${user.role}`}>{user.role}</span>
+                </div>
+                <button onClick={handleLogout} className="btn btn-ghost btn-sm" style={{ marginLeft: "4px" }}>
+                  Exit
                 </button>
               </div>
             </>
           ) : (
             <>
-              <Link to="/login" className="btn btn-outline btn-sm">Login</Link>
-              <Link to="/register" className="btn btn-primary btn-sm">Sign Up</Link>
+              <div className="nav-sep" />
+              <Link to="/login" className="btn btn-ghost btn-sm">Sign in</Link>
+              <Link to="/register" className="btn btn-primary btn-sm">Join Free</Link>
             </>
           )}
         </div>

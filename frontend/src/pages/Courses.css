@@ -1,57 +1,21 @@
-.courses-filter {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 28px;
-}
+.courses-topbar { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 32px; flex-wrap: wrap; }
 
-.search-input {
-  width: 100%;
-  max-width: 480px;
-  padding: 11px 16px;
-  background: var(--bg-card);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-sm);
-  color: var(--text-primary);
-  font-family: var(--font-body);
-  font-size: 14px;
-  outline: none;
-  transition: border-color 0.2s;
-}
+.courses-search-wrap { position: relative; flex: 1; max-width: 400px; }
+.search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 14px; pointer-events: none; }
 
-.search-input:focus {
-  border-color: var(--accent);
+.courses-search {
+  width: 100%; padding: 11px 14px 11px 38px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-xs); color: var(--text-primary);
+  font-family: var(--font-sans); font-size: 13px; font-weight: 300;
+  outline: none; transition: border-color 0.25s, box-shadow 0.25s;
 }
+.courses-search:focus { border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-dim); }
+.courses-search::placeholder { color: var(--text-muted); }
 
-.search-input::placeholder {
-  color: var(--text-muted);
-}
+.filter-tabs { display: flex; gap: 2px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-xs); padding: 3px; flex-wrap: wrap; }
+.filter-tab { padding: 7px 16px; border: none; background: transparent; color: var(--text-muted); font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; border-radius: 3px; transition: all 0.2s var(--ease); white-space: nowrap; }
+.filter-tab:hover { color: var(--text-primary); background: var(--surface-2); }
+.filter-tab.active { background: var(--gold-dim); color: var(--gold); border: 1px solid var(--border-gold); }
 
-.category-tabs {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.cat-tab {
-  padding: 6px 16px;
-  border-radius: 20px;
-  border: 1.5px solid var(--border);
-  background: transparent;
-  color: var(--text-secondary);
-  font-family: var(--font-main);
-  font-size: 13px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.cat-tab:hover {
-  border-color: var(--border-light);
-  color: var(--text-primary);
-}
-
-.cat-tab.active {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: white;
-}
+.courses-count { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; color: var(--text-muted); white-space: nowrap; }

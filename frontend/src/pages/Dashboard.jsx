@@ -1,13 +1,3 @@
-// ============================================================
-// pages/Dashboard.jsx — User Dashboard
-// ============================================================
-// Shows different content based on user role:
-//   - Student: stats (total courses, enrolled, avg progress) + enrolled courses
-//   - Instructor: link to their courses + quick actions
-//
-// useEffect runs when component mounts to fetch data from API.
-// ============================================================
-
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -16,153 +6,135 @@ import "./Dashboard.css";
 
 const Dashboard = () => {
   const { user } = useAuth();
-
-  // State for student dashboard
   const [stats, setStats] = useState(null);
   const [enrollments, setEnrollments] = useState([]);
-
-  // State for instructor dashboard
   const [instructorCourses, setInstructorCourses] = useState([]);
-
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         if (user.role === "student") {
-          // Fetch stats and enrolled courses in parallel
-          const [statsRes, enrollRes] = await Promise.all([
+          const [sRes, eRes] = await Promise.all([
             api.get("/enroll/dashboard"),
             api.get("/enroll/my-courses"),
           ]);
-          setStats(statsRes.data);
-          setEnrollments(enrollRes.data.enrollments);
+          setStats(sRes.data);
+          setEnrollments(eRes.data.enrollments);
         } else {
-          // Instructor: fetch their own courses
           const res = await api.get("/courses/instructor/my-courses");
           setInstructorCourses(res.data.courses);
         }
       } catch (err) {
-        console.error("Dashboard fetch error:", err);
+        console.error(err);
       } finally {
         setLoading(false);
       }
     };
-
     fetchData();
   }, [user.role]);
 
   if (loading) return <div className="spinner" />;
 
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+
   return (
     <div className="page">
       <div className="container">
-        <div className="page-header">
-          <h1>Hello, {user.name} 👋</h1>
-          <p>
+        <div className="page-header" style={{ paddingTop: "12px" }}>
+          <span className="eyebrow">{greeting}</span>
+          <h1 className="dashboard-greeting">
+            Welcome back, <em>{user.name.split(" ")[0]}</em>
+          </h1>
+          <p className="dashboard-subtext">
             {user.role === "student"
-              ? "Here's your learning progress"
-              : "Manage your courses and track engagement"}
+              ? "Here's a snapshot of your learning journey"
+              : "Your instructor studio — manage and create courses"}
           </p>
         </div>
 
-        {/* ====== STUDENT DASHBOARD ====== */}
-        {user.role === "student" && (
-          <>
-            {/* Stats Row */}
-            {stats && (
-              <div className="stats-row">
-                <div className="stat-card">
-                  <div className="stat-number">{stats.totalCourses}</div>
-                  <div className="stat-label">📚 Total Courses Available</div>
-                </div>
-                <div className="stat-card">
-                  <div className="stat-number">{stats.enrolledCourses}</div>
-                  <div className="stat-label">✅ Courses Enrolled</div>
-                </div>
-                <div className="stat-card">
-                  <div className="stat-number">{stats.averageProgress}%</div>
-                  <div className="stat-label">📈 Average Progress</div>
-                </div>
-              </div>
-            )}
+        {user.role === "student" && stats && (
+          <div className="stats-row animate-fade-up">
+            <div className="stat-card">
+              <div className="stat-number">{stats.totalCourses}</div>
+              <div className="stat-label">Total Courses Available</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-number">{stats.enrolledCourses}</div>
+              <div className="stat-label">Courses Enrolled</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-number">{stats.averageProgress}<span style={{ fontSize: "24px" }}>%</span></div>
+              <div className="stat-label">Average Progress</div>
+            </div>
+          </div>
+        )}
 
-            {/* Enrolled Courses */}
-            <div className="flex-between mb-4">
-              <h2>My Enrolled Courses</h2>
-              <Link to="/courses" className="btn btn-outline btn-sm">Browse More</Link>
+        {user.role === "instructor" && (
+          <div className="stats-row animate-fade-up">
+            <div className="stat-card">
+              <div className="stat-number">{instructorCourses.length}</div>
+              <div className="stat-label">Courses Created</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-number">{instructorCourses.reduce((s, c) => s + (c.lessons?.length || 0), 0)}</div>
+              <div className="stat-label">Total Lessons Published</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-number">{instructorCourses.filter(c => c.lessons?.length > 0).length}</div>
+              <div className="stat-label">Active Courses</div>
+            </div>
+          </div>
+        )}
+
+        {user.role === "student" && (
+          <div className="animate-fade-up delay-2">
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
+              <div className="section-label" style={{ flex: 1, marginBottom: 0 }}>My Enrolled Courses</div>
+              <Link to="/courses" className="btn btn-ghost btn-sm" style={{ marginLeft: "16px" }}>Browse more →</Link>
             </div>
 
             {enrollments.length === 0 ? (
               <div className="empty-state">
-                <h3>No enrollments yet</h3>
-                <p>Explore our courses and enroll today!</p>
+                <div className="empty-state-icon">◎</div>
+                <h3>No courses yet</h3>
+                <p>Enroll in a course to start your journey</p>
                 <Link to="/courses" className="btn btn-primary mt-4">Browse Courses</Link>
               </div>
             ) : (
               <div className="enrollment-list">
-                {enrollments.map((e) => (
-                  <div key={e._id} className="enrollment-item">
-                    <div className="enrollment-info">
-                      <h3>{e.course?.title}</h3>
-                      <p>
-                        By {e.course?.instructor?.name} ·{" "}
-                        {e.course?.category}
-                      </p>
+                {enrollments.map(e => (
+                  <div key={e._id} className="enrollment-row">
+                    <div className="enroll-info">
+                      <div className="enroll-title">{e.course?.title}</div>
+                      <div className="enroll-meta">{e.course?.instructor?.name} · {e.course?.category}</div>
                     </div>
-                    <div className="enrollment-progress">
-                      <div className="flex-between mb-2">
-                        <span className="progress-label">Progress</span>
-                        <span className="progress-pct">{e.progress}%</span>
+                    <div className="enroll-progress">
+                      <div className="enroll-progress-row">
+                        <span className="enroll-pct-label">Progress</span>
+                        <span className="enroll-pct-val">{e.progress}%</span>
                       </div>
                       <div className="progress-bar">
-                        <div
-                          className="progress-fill"
-                          style={{ width: `${e.progress}%` }}
-                        />
+                        <div className="progress-fill" style={{ width: `${e.progress}%` }} />
                       </div>
                     </div>
-                    <Link to={`/courses/${e.course?._id}`} className="btn btn-outline btn-sm">
-                      Continue
-                    </Link>
+                    <Link to={`/courses/${e.course?._id}`} className="btn btn-outline btn-sm">Continue</Link>
                   </div>
                 ))}
               </div>
             )}
-          </>
+          </div>
         )}
 
-        {/* ====== INSTRUCTOR DASHBOARD ====== */}
         {user.role === "instructor" && (
-          <>
-            <div className="stats-row">
-              <div className="stat-card">
-                <div className="stat-number">{instructorCourses.length}</div>
-                <div className="stat-label">📖 Courses Created</div>
-              </div>
-              <div className="stat-card">
-                <div className="stat-number">
-                  {instructorCourses.reduce((sum, c) => sum + (c.lessons?.length || 0), 0)}
-                </div>
-                <div className="stat-label">🎬 Total Lessons</div>
-              </div>
-              <div className="stat-card">
-                <div className="stat-number">
-                  {instructorCourses.filter(c => c.lessons?.length > 0).length}
-                </div>
-                <div className="stat-label">✅ Active Courses</div>
-              </div>
+          <div className="animate-fade-up delay-2">
+            <div className="section-label">Quick Actions</div>
+            <div className="instructor-quick-actions">
+              <Link to="/create-course" className="btn btn-primary">+ Create New Course</Link>
+              <Link to="/instructor" className="btn btn-outline">Manage Courses →</Link>
             </div>
-
-            <div className="instructor-actions">
-              <Link to="/create-course" className="btn btn-primary">
-                + Create New Course
-              </Link>
-              <Link to="/instructor" className="btn btn-outline">
-                Manage Courses
-              </Link>
-            </div>
-          </>
+          </div>
         )}
       </div>
     </div>

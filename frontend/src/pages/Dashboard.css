@@ -1,62 +1,33 @@
-.enrollment-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
+.dashboard-greeting { font-family: var(--font-serif); font-size: clamp(28px, 4vw, 48px); font-weight: 300; letter-spacing: -0.02em; margin-bottom: 4px; padding-top: 20px; }
+.dashboard-greeting em { font-style: italic; color: var(--gold); }
+.dashboard-subtext { font-size: 13px; font-weight: 300; color: var(--text-secondary); }
 
-.enrollment-item {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 18px 22px;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  transition: border-color 0.2s;
-}
+.enrollment-list { display: flex; flex-direction: column; gap: 2px; border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
 
-.enrollment-item:hover {
-  border-color: var(--border-light);
+.enrollment-row {
+  background: var(--surface);
+  padding: 20px 24px;
+  display: flex; align-items: center; gap: 24px;
+  transition: background 0.2s var(--ease);
+  position: relative;
 }
+.enrollment-row::before {
+  content: '';
+  position: absolute; left: 0; top: 0; bottom: 0; width: 2px;
+  background: var(--gold);
+  transform: scaleY(0);
+  transition: transform 0.3s var(--ease);
+}
+.enrollment-row:hover { background: var(--surface-2); }
+.enrollment-row:hover::before { transform: scaleY(1); }
 
-.enrollment-info {
-  flex: 1;
-  min-width: 0;
-}
+.enroll-info { flex: 1; min-width: 0; }
+.enroll-title { font-family: var(--font-serif); font-size: 16px; font-weight: 400; color: var(--text-primary); margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.enroll-meta { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em; color: var(--text-muted); text-transform: uppercase; }
 
-.enrollment-info h3 {
-  font-size: 15px;
-  margin-bottom: 4px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+.enroll-progress { width: 180px; flex-shrink: 0; }
+.enroll-progress-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.enroll-pct-label { font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; }
+.enroll-pct-val { font-family: var(--font-serif); font-size: 18px; font-weight: 300; color: var(--gold); }
 
-.enrollment-info p {
-  font-size: 12px;
-  color: var(--text-muted);
-}
-
-.enrollment-progress {
-  width: 200px;
-  flex-shrink: 0;
-}
-
-.progress-label {
-  font-size: 12px;
-  color: var(--text-muted);
-  font-family: var(--font-main);
-}
-
-.progress-pct {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--accent);
-  font-family: var(--font-main);
-}
-
-.instructor-actions {
-  display: flex;
-  gap: 12px;
-  margin-top: 8px;
-}
+.instructor-quick-actions { display: flex; gap: 12px; margin-top: 8px; }
