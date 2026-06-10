@@ -5,24 +5,24 @@ import { useAuth } from "../context/AuthContext";
 import "./Auth.css";
 
 const Register = () => {
-  const [formData, setFormData] = useState({ name: "", email: "", password: "", role: "student" });
+  const [form, setForm] = useState({ name: "", email: "", password: "", role: "student" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+  const onChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
-  const handleSubmit = async (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
     try {
-      const res = await api.post("/auth/register", formData);
+      const res = await api.post("/auth/register", form);
       login(res.data.user, res.data.token);
       navigate("/dashboard");
     } catch (err) {
-      setError(err.response?.data?.message || "Registration failed");
+      setError(err.response?.data?.message || "Registration failed.");
     } finally {
       setLoading(false);
     }
@@ -31,25 +31,22 @@ const Register = () => {
   return (
     <div className="auth-page">
       <div className="auth-left">
-        <div className="auth-left-inner">
-          <div className="auth-left-overline">
-            <span className="auth-left-line" />
-            <span className="auth-left-tag">Get started</span>
-          </div>
-          <h2 className="auth-left-title">Begin your<br /><em>journey today</em></h2>
+        <div className="auth-left-content anim-fade-up">
+          <div className="auth-left-logo">learn<span>.in</span></div>
+          <h2 className="auth-left-title">Join<br /><em>thousands</em><br />of learners</h2>
           <p className="auth-left-desc">
-            Join thousands of learners and instructors building real skills
-            on Learn.in — the premium online learning platform.
+            Build real skills on a professional platform. Whether you're learning or teaching,
+            learn.in has the tools you need.
           </p>
-          <ul className="auth-feature-list">
+          <ul className="auth-feat-list">
             {[
-              "Free to join, no credit card required",
-              "Choose your role: Student or Instructor",
-              "Access structured courses with lessons",
-              "Track and showcase your learning progress",
+              "Free forever, no credit card needed",
+              "Student or Instructor — your choice",
+              "Progress tracking from day one",
+              "Earn recognition with course completions",
             ].map((f, i) => (
-              <li key={i} className="auth-feature-item">
-                <span className="auth-feature-dot" />{f}
+              <li key={i} className="auth-feat-item">
+                <span className="auth-feat-icon">✓</span>{f}
               </li>
             ))}
           </ul>
@@ -57,60 +54,59 @@ const Register = () => {
       </div>
 
       <div className="auth-right">
-        <div className="auth-form-wrap animate-fade-up">
+        <div className="auth-form-container anim-scale-in">
           <div className="auth-form-header">
-            <h1 className="auth-greeting">Create account</h1>
-            <p className="auth-subtext">Fill in your details to get started</p>
+            <h1 className="auth-form-title">Create account</h1>
+            <p className="auth-form-subtitle">Free to join. No credit card required.</p>
           </div>
 
-          {error && <div className="alert alert-error">⚠ {error}</div>}
+          {error && <div className="alert alert-error" style={{ marginBottom: "16px" }}>⚠ {error}</div>}
 
-          <form className="auth-form" onSubmit={handleSubmit}>
+          <form className="auth-form" onSubmit={onSubmit}>
             <div className="form-group">
-              <label className="form-label">Full Name</label>
+              <label className="form-label">Full name</label>
               <input className="form-input" type="text" name="name"
-                placeholder="John Doe" value={formData.name}
-                onChange={handleChange} required />
+                placeholder="John Doe" value={form.name}
+                onChange={onChange} required />
             </div>
             <div className="form-group">
-              <label className="form-label">Email Address</label>
+              <label className="form-label">Email address</label>
               <input className="form-input" type="email" name="email"
-                placeholder="you@example.com" value={formData.email}
-                onChange={handleChange} required />
+                placeholder="you@example.com" value={form.email}
+                onChange={onChange} required />
             </div>
             <div className="form-group">
               <label className="form-label">Password</label>
               <input className="form-input" type="password" name="password"
-                placeholder="Min. 6 characters" value={formData.password}
-                onChange={handleChange} required />
+                placeholder="Min. 6 characters" value={form.password}
+                onChange={onChange} required />
             </div>
             <div className="form-group">
-              <label className="form-label">I am joining as a</label>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
-                {["student", "instructor"].map(role => (
-                  <button key={role} type="button"
-                    onClick={() => setFormData({ ...formData, role })}
-                    style={{
-                      padding: "12px",
-                      border: `1px solid ${formData.role === role ? "var(--gold)" : "var(--border)"}`,
-                      borderRadius: "var(--radius-xs)",
-                      background: formData.role === role ? "var(--gold-dim)" : "var(--surface-2)",
-                      color: formData.role === role ? "var(--gold)" : "var(--text-secondary)",
-                      cursor: "pointer", fontFamily: "var(--font-sans)", fontSize: "13px",
-                      fontWeight: "400", transition: "all 0.2s", textTransform: "capitalize",
-                    }}>
-                    {role === "student" ? "🎓 Student" : "👨‍🏫 Instructor"}
-                  </button>
+              <label className="form-label">I want to</label>
+              <div className="role-picker">
+                {[
+                  { val: "student",    icon: "🎓", title: "Learn",  sub: "Access courses" },
+                  { val: "instructor", icon: "🧑‍🏫", title: "Teach",  sub: "Create courses" },
+                ].map(r => (
+                  <div
+                    key={r.val}
+                    className={`role-option ${form.role === r.val ? "selected" : ""}`}
+                    onClick={() => setForm({ ...form, role: r.val })}
+                  >
+                    <span className="role-option-icon">{r.icon}</span>
+                    <span className="role-option-title">{r.title}</span>
+                    <span className="role-option-sub">{r.sub}</span>
+                  </div>
                 ))}
               </div>
             </div>
             <button type="submit" className="btn btn-primary auth-submit" disabled={loading}>
-              {loading ? "Creating account..." : "Create Account →"}
+              {loading ? "Creating account..." : "Create account →"}
             </button>
           </form>
 
-          <p className="auth-switch-row">
-            Already a member? <Link to="/login">Sign in</Link>
+          <p className="auth-footer">
+            Already have an account? <Link to="/login">Sign in</Link>
           </p>
         </div>
       </div>

@@ -1,170 +1,140 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import "./Home.css";
-
-const CATEGORIES = [
-  { icon: "⚡", name: "Web Development", count: "24 courses" },
-  { icon: "🧠", name: "Data Science", count: "18 courses" },
-  { icon: "🎨", name: "Design", count: "12 courses" },
-  { icon: "📱", name: "Mobile Apps", count: "9 courses" },
-];
 
 const FEATURES = [
-  { title: "Expert Instructors", desc: "Learn from industry professionals who bring real-world experience to every lesson." },
-  { title: "Structured Paths", desc: "Follow curated learning paths from beginner to advanced, with clear milestones." },
-  { title: "Progress Tracking", desc: "Monitor your growth in real-time with detailed progress analytics on your dashboard." },
-  { title: "Secure Platform", desc: "JWT-based authentication ensures your learning data stays private and protected." },
+  { icon: "📐", title: "Structured Learning", desc: "Step-by-step lessons with clear objectives and progress tracking built in." },
+  { icon: "🎓", title: "Expert-Led Courses", desc: "Learn directly from instructors who create curated, in-depth content." },
+  { icon: "📊", title: "Live Analytics", desc: "Instructors see real-time enrollment data, student progress, and ratings." },
+  { icon: "🔐", title: "Secure Access", desc: "JWT authentication with role-based permissions keeps your account safe." },
+  { icon: "⭐", title: "Student Reviews", desc: "Honest ratings and reviews help students find the best courses." },
+  { icon: "📢", title: "Announcements", desc: "Instructors post course updates; students stay informed in real-time." },
 ];
 
 const Home = () => {
   const { user } = useAuth();
 
   return (
-    <div className="home-page">
-      <section className="hero">
-        <div className="hero-ambient" />
-        <div className="hero-grid" />
-
-        <div className="hero-content">
-          <div className="hero-left">
-            <div className="hero-overline">
-              <span className="hero-overline-line" />
-              <span className="hero-overline-text">Online Learning Platform</span>
-            </div>
-
-            <h1 className="hero-title">
-              Master skills that<br />
-              <span className="hero-title-italic">define careers</span>
-            </h1>
-
-            <p className="hero-description">
-              A premium learning environment where world-class instructors and
-              ambitious students converge. Build expertise that lasts.
-            </p>
-
-            <div className="hero-actions">
-              <Link to="/courses" className="btn btn-primary btn-lg">Explore Courses</Link>
-              {!user ? (
-                <Link to="/register" className="btn btn-outline btn-lg">Join Free →</Link>
-              ) : (
-                <Link to="/dashboard" className="btn btn-outline btn-lg">My Dashboard →</Link>
-              )}
-            </div>
-
-            <div className="hero-stats-strip">
-              {[
-                { num: "500+", desc: "Students Enrolled" },
-                { num: "48", desc: "Expert Courses" },
-                { num: "12", desc: "Instructors" },
-                { num: "98%", desc: "Satisfaction Rate" },
-              ].map((s, i) => (
-                <div key={i}>
-                  <span className="hero-stat-num">{s.num}</span>
-                  <span className="hero-stat-desc">{s.desc}</span>
-                </div>
-              ))}
-            </div>
+    <div style={{ paddingTop: "64px" }}>
+      {/* Hero */}
+      <section style={{
+        padding: "100px 0 80px",
+        borderBottom: "1px solid var(--border)",
+        position: "relative",
+        overflow: "hidden",
+      }}>
+        <div style={{
+          position: "absolute", inset: 0,
+          background: "radial-gradient(ellipse 70% 60% at 50% -10%, rgba(59,130,246,0.08) 0%, transparent 70%)",
+          pointerEvents: "none",
+        }} />
+        <div className="container" style={{ textAlign: "center" }}>
+          <div className="anim-fade-up">
+            <span style={{
+              display: "inline-block",
+              background: "var(--blue-dim)",
+              border: "1px solid rgba(59,130,246,0.25)",
+              borderRadius: "var(--r-full)",
+              padding: "5px 16px",
+              fontSize: "12px",
+              fontWeight: 600,
+              color: "var(--blue-light)",
+              marginBottom: "28px",
+              letterSpacing: "-0.01em",
+            }}>
+              🚀 Professional Learning Platform
+            </span>
           </div>
 
-          <div className="hero-right">
-            <div className="hero-card">
-              <div className="hero-card-tag">// Your learning overview</div>
-              <div className="hero-card-title">Dashboard Preview</div>
-              <div className="hero-card-sub">Current progress across enrolled courses</div>
+          <h1 className="anim-fade-up d-1" style={{
+            fontFamily: "var(--serif)",
+            fontSize: "clamp(48px, 7vw, 88px)",
+            fontWeight: 500,
+            letterSpacing: "-0.03em",
+            lineHeight: 1.06,
+            marginBottom: "24px",
+            color: "var(--text-1)",
+          }}>
+            Learn skills that<br />
+            <em style={{ fontStyle: "italic", color: "var(--blue-light)" }}>move careers forward</em>
+          </h1>
 
-              {[
-                { label: "Advanced React Patterns", pct: 74 },
-                { label: "Data Structures & Algorithms", pct: 42 },
-                { label: "UI/UX Design Fundamentals", pct: 91 },
-              ].map((item, i) => (
-                <div key={i} className="hero-progress-item">
-                  <div className="hero-progress-meta">
-                    <span className="hero-progress-label">{item.label}</span>
-                    <span className="hero-progress-pct">{item.pct}%</span>
-                  </div>
-                  <div className="progress-bar">
-                    <div className="progress-fill" style={{ width: `${item.pct}%` }} />
-                  </div>
-                </div>
-              ))}
+          <p className="anim-fade-up d-2" style={{
+            fontSize: "clamp(15px, 2vw, 18px)",
+            color: "var(--text-2)",
+            fontWeight: 400,
+            maxWidth: "560px",
+            margin: "0 auto 44px",
+            lineHeight: 1.7,
+          }}>
+            A professional online learning platform with real progress tracking,
+            instructor analytics, student reviews, and structured course delivery.
+          </p>
 
-              <div className="hero-card-divider" />
-              <div className="hero-card-metrics">
-                <div className="hero-metric">
-                  <span className="hero-metric-val">3</span>
-                  <span className="hero-metric-label">Enrolled</span>
-                </div>
-                <div className="hero-metric">
-                  <span className="hero-metric-val">69%</span>
-                  <span className="hero-metric-label">Avg Progress</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="hero-float">
-              <div className="hero-float-icon">🏆</div>
-              <div className="hero-float-text">
-                <strong>Lesson Complete</strong>
-                <span>Advanced Hooks — 2m ago</span>
-              </div>
-            </div>
+          <div className="anim-fade-up d-3" style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}>
+            <Link to="/courses" className="btn btn-primary btn-lg">Explore Courses</Link>
+            {!user
+              ? <Link to="/register" className="btn btn-ghost btn-lg">Create Free Account →</Link>
+              : <Link to="/dashboard" className="btn btn-secondary btn-lg">Go to Dashboard →</Link>
+            }
           </div>
-        </div>
-      </section>
 
-      <section className="home-section" style={{ background: "var(--surface)", borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)" }}>
-        <div className="container">
-          <div className="section-header">
-            <div>
-              <span className="eyebrow">Explore by field</span>
-              <h2 className="section-title">Browse <em>categories</em></h2>
-            </div>
-            <Link to="/courses" className="btn btn-outline btn-sm">View all courses</Link>
-          </div>
-          <div className="categories-grid">
-            {CATEGORIES.map((cat, i) => (
-              <Link to="/courses" key={i} className="category-item">
-                <span className="category-icon">{cat.icon}</span>
-                <div className="category-name">{cat.name}</div>
-                <div className="category-count">{cat.count}</div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="features-strip">
-        <div className="container">
-          <div className="section-header" style={{ marginBottom: "48px" }}>
-            <div>
-              <span className="eyebrow">Why Learn.in</span>
-              <h2 className="section-title">Built for <em>serious</em> learners</h2>
-            </div>
-          </div>
-          <div className="features-grid">
-            {FEATURES.map((f, i) => (
-              <div key={i} className="feature-item">
-                <div className="feature-bar" />
-                <div className="feature-title">{f.title}</div>
-                <div className="feature-desc">{f.desc}</div>
+          {/* Stats strip */}
+          <div className="anim-fade-up d-4" style={{
+            display: "flex",
+            justifyContent: "center",
+            gap: "48px",
+            marginTop: "60px",
+            paddingTop: "40px",
+            borderTop: "1px solid var(--border)",
+            flexWrap: "wrap",
+          }}>
+            {[["500+", "Students"], ["48", "Courses"], ["12", "Instructors"], ["98%", "Satisfaction"]].map(([n, l], i) => (
+              <div key={i} style={{ textAlign: "center" }}>
+                <div style={{ fontSize: "28px", fontWeight: 800, color: "var(--text-1)", letterSpacing: "-0.04em", lineHeight: 1 }}>{n}</div>
+                <div style={{ fontSize: "12px", color: "var(--text-3)", marginTop: "4px", fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.06em" }}>{l}</div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {!user && (
-        <section className="home-cta">
-          <div className="container">
-            <span className="eyebrow" style={{ display: "block", textAlign: "center", marginBottom: "24px" }}>Start today</span>
-            <h2 className="cta-title">
-              Ready to begin your<br />
-              <em style={{ color: "var(--gold)", fontStyle: "italic" }}>learning journey?</em>
+      {/* Features */}
+      <section style={{ padding: "80px 0", borderBottom: "1px solid var(--border)" }}>
+        <div className="container">
+          <div style={{ textAlign: "center", marginBottom: "56px" }}>
+            <span style={{ fontFamily: "var(--mono)", fontSize: "11px", color: "var(--blue)", letterSpacing: "0.15em", textTransform: "uppercase", display: "block", marginBottom: "12px" }}>
+              Platform features
+            </span>
+            <h2 style={{ fontFamily: "var(--sans)", fontSize: "clamp(28px, 3.5vw, 42px)", fontWeight: 700, letterSpacing: "-0.03em", color: "var(--text-1)" }}>
+              Everything you need to learn &amp; teach
             </h2>
-            <p className="cta-sub">Join thousands of students. Access premium content. Track your progress.</p>
-            <div style={{ display: "flex", gap: "14px", justifyContent: "center" }}>
+          </div>
+
+          <div className="grid-3">
+            {FEATURES.map((f, i) => (
+              <div key={i} className={`card anim-fade-up d-${Math.min(i + 1, 6)}`} style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                <div style={{ fontSize: "24px" }}>{f.icon}</div>
+                <div style={{ fontSize: "15px", fontWeight: 700, color: "var(--text-1)", letterSpacing: "-0.01em" }}>{f.title}</div>
+                <div style={{ fontSize: "13px", color: "var(--text-2)", lineHeight: 1.65, fontWeight: 400 }}>{f.desc}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      {!user && (
+        <section style={{ padding: "80px 0", textAlign: "center" }}>
+          <div className="container">
+            <h2 style={{ fontFamily: "var(--serif)", fontSize: "clamp(32px, 4vw, 54px)", fontWeight: 500, letterSpacing: "-0.02em", marginBottom: "16px" }}>
+              Start your journey today
+            </h2>
+            <p style={{ fontSize: "16px", color: "var(--text-2)", marginBottom: "36px" }}>
+              Free to join. No credit card required.
+            </p>
+            <div style={{ display: "flex", gap: "12px", justifyContent: "center" }}>
               <Link to="/register" className="btn btn-primary btn-lg">Create Free Account</Link>
-              <Link to="/courses" className="btn btn-outline btn-lg">Browse Courses</Link>
+              <Link to="/courses" className="btn btn-secondary btn-lg">Browse Courses</Link>
             </div>
           </div>
         </section>
